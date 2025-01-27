@@ -1,0 +1,655 @@
+openapi: 3.0.3
+info:
+  version: 1.0.1
+  title: The Flight Reservation API
+servers:
+  - url: http://localhost:8080
+
+tags:
+  - name: "Flights"
+    description: "Methods are about Flights"
+  - name: "Booking"
+    description: "Methods are about Booking"
+  - name: "Airline"
+    description: "Methods are about Airlines"
+paths:
+  /v1/flights:
+    post:
+      tags:
+        - Flights
+      summary: "Create a flight"
+      requestBody:
+        description: "Define an flight to create new one"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightRequest'
+      responses:
+        '201':
+          description: Created successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightResponse'
+        '400':
+          description: Bad or invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+    get:
+      tags:
+        - Flights
+      summary: "Get upcoming flight list"
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightList'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+  /v1/flights/all:
+    get:
+      tags:
+        - Flights
+      summary: "Get all flights"
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightList'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+  /v1/flights/{flightNumber}:
+    get:
+      tags:
+        - Flights
+      summary: "Get a flight"
+      parameters:
+        - name: flightNumber
+          in: path
+          required: true
+          description: The flightNumber of the flight
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Flight'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+    patch:
+      tags:
+        - Flights
+      summary: "Update a Flight"
+      parameters:
+        - name: flightNumber
+          in: path
+          required: true
+          description: The flightNumber of the flight
+          schema:
+            type: string
+      requestBody:
+        description: "Update a flight object"
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FlightRequest'
+      responses:
+        '200':
+          description: Updated successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightResponse'
+        '400':
+          description: 'Bad or invalid request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+    delete:
+      tags:
+        - Flights
+      summary: "Delete given flight"
+      parameters:
+        - name: flightNumber
+          in: path
+          required: true
+          description: The flightNumber of the flight
+          schema:
+            type: string
+      responses:
+        '204':
+          description: Deleted successful
+        '400':
+          description: 'Bad or invalid request'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/NotFoundResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+  /v1/flights/{flightNumber}/seats:
+    get:
+      tags:
+        - Flights
+      summary: "Get seats of flight"
+      parameters:
+        - name: flightNumber
+          in: path
+          required: true
+          description: The flightNumber of the flight
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatList'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+  /v1/flights/{flightNumber}/seats/{seatStatus}:
+    get:
+      tags:
+        - Flights
+      summary: "Get seats of flight"
+      parameters:
+        - name: flightNumber
+          in: path
+          description: the flightNumber of flight
+          required: true
+          schema:
+            type: string
+        - name: seatStatus
+          in: path
+          description: the status of seats
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: Get successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SeatList'
+        '404':
+          description: The resource is not found !
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+
+  /v1/bookings:
+    post:
+      tags:
+        - Booking
+      summary: "Book a flight"
+      requestBody:
+        description: "Book a Flight"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/BookingRequest'
+      responses:
+        '201':
+          description: Created successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FlightResponse'
+        '400':
+          description: Bad or invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+
+  /v1/airlines:
+    post:
+      tags:
+        - Airlines
+      summary: "Create an airline"
+      requestBody:
+        description: "Create an airline"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirlineRequest'
+      responses:
+        '201':
+          description: Created successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirlineResponse'
+        '400':
+          description: Bad or invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+  /v1/airports:
+    post:
+      tags:
+        - Airports
+      summary: "Create an airport"
+      requestBody:
+        description: "Create an airport"
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/AirportRequest'
+      responses:
+        '201':
+          description: Created successful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AirportResponse'
+        '400':
+          description: Bad or invalid request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/InvalidResponse'
+        '500':
+          description: 'Internal server error'
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FailedResponse'
+
+components:
+  schemas:
+    FlightResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Flight'
+        - type: object
+      properties:
+        flightId:
+          type: integer
+          example: 1
+          description: "an unique ID for flight object"
+          readOnly: true
+    Flight:
+      type: object
+      properties:
+        flightNumber:
+          type: string
+          example: "RNR1"
+          description: "an unique flight number for create flight"
+        departureDateTime:
+          type: string
+          format: date-time
+          example: "2025-10-01T10:11+0300"
+          description: "Flight Departure Date Time"
+        arrivalDateTime:
+          type: string
+          format: date-time
+          example: "2025-10-01T10:11+0300"
+          description: "Flight Arrival Date Time"
+        originAirportCode:
+          type: string
+          example: "IST"
+          description: "Departure/Origin airport code"
+        destinationAirportCode:
+          type: string
+          example: "IST"
+          description: "Destination airport code"
+        airlineCode:
+          type: string
+          example: "THY"
+          description: "Airline code"
+        flightStatus:
+          type: string
+          example: "WAITING"
+          description: "Flight Status"
+        description:
+          type: string
+          example: "A Flight Description"
+          description: "Flight description"
+        price:
+          type: number
+          example: 10.0
+          description: "Flight price"
+    FlightRequest:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/Flight'
+        - type: object
+      writeOnly: true
+      properties:
+        availableSeats:
+          type: integer
+          example: 10
+          description: "Available seat count"
+    FlightList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Flight'
+
+    SeatList:
+      type: array
+      items:
+        $ref: '#/components/schemas/Seat'
+    Seat:
+      type: object
+      properties:
+        seatId:
+          type: integer
+          example: 1
+          description: "ID of the Seat"
+        seatNumber:
+          type: string
+          example: "RNR11"
+          description: "Number of the Seat"
+        passengerId:
+          type: integer
+          example: 2
+          description: "Id of the passenger that owns that seat, can be null"
+        status:
+          type: string
+          example: "BOOKED"
+          description: "If seat has no passenger this value will be AVAILABLE"
+        flightId:
+          type: integer
+          example: 1,
+          description: "Flight Id of that seat"
+
+    BookingRequest:
+      type: object
+      properties:
+        flightNumber:
+          type: string
+          example: "RNR1"
+          description: "an unique flight number"
+        firstName:
+          type: string
+          example: "FirstName"
+          description: "First Name of passenger"
+        lastName:
+          type: string
+          example: "LastName"
+          description: "Last Name of passenger"
+        email:
+          type: string
+          example: "email"
+          description: "Email of passenger"
+        passportNumber:
+          type: string
+          example: "1234RERE"
+          description: "Passport Number of passenger"
+        seatNumber:
+          type: string
+          example: "RNR11"
+          description: "seat number of the seat"
+        paymentMethod:
+          type: string
+          example: "credit_card"
+          description: "method of the payment"
+    BookingResponse:
+      type: object
+      properties:
+        bookingId:
+          type: integer
+          example: 1
+          description: "booking id"
+        paymentStatus:
+          type: string
+          example: "PAID"
+          description: "status of payment"
+        flightId:
+          type: integer
+          example: 1
+          description: "id of the flight"
+        passengerId:
+          type: integer
+          example: 1
+          description: "id of the passenger"
+        statusCode:
+          type: integer
+          example: 201
+          description: "status code"
+    AirlineResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AirlineRequest'
+        - type: object
+      properties:
+        airlineId:
+          type: integer
+          example: 1
+          description: "ID of airline"
+
+    AirlineRequest:
+      type: object
+      properties:
+        airlineName:
+          type: string
+          example: "Turk Hava Yollari"
+          description: "Airline Name"
+        airlineCode:
+          type: string
+          example: "THY"
+          description: "Unique code for airline"
+
+    AirportResponse:
+      type: object
+      allOf:
+        - $ref: '#/components/schemas/AirportRequest'
+        - type: object
+      properties:
+        airlineId:
+          type: integer
+          example: 1
+          description: "ID of airport"
+    AirportRequest:
+      type: object
+      properties:
+        airportName:
+          type: string
+          example: "Istanbul"
+          description: "Airport Name"
+        airportCode:
+          type: string
+          example: "IST"
+          description: "Unique code for airport"
+        location:
+          type: string
+          example: "IST"
+          description: "airport location"
+
+    BaseResponse:
+      type: object
+      readOnly: true
+      properties:
+        timestamp:
+          type: string
+          example: 2020-03-30T11:10:20.049+0000
+        status:
+          enum:
+            - 200
+            - 201
+            - 204
+            - 400
+            - 401
+            - 403
+            - 404
+            - 500
+        message:
+          type: string
+          example: message of that BaseResponse
+        error:
+          type: string
+        path:
+          type: string
+          example: path
+    BaseResponseV2:
+      type: object
+      readOnly: true
+      properties:
+        status:
+          type: string
+          example: ok
+        message:
+          type: string
+          example: successful
+
+    CommonModel:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+          description: "id of resource object"
+          readOnly: true
+        createdAt:
+          type: string
+          format: date-time
+          example: "2006-01-02T15:04:05Z"
+          readOnly: true
+        updatedAt:
+          type: string
+          format: date-time
+          example: "2006-01-02T15:04:05Z"
+          readOnly: true
+    CommonCreatedResponse:
+      type: object
+      properties:
+        status:
+          type: number
+          example: 201
+        id:
+          type: number
+          example: 1
+    FailedResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+      type: object
+      properties:
+        status:
+          example: 500
+        error:
+          example: Server Error
+    InvalidResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+      properties:
+        status:
+          example: 400
+        error:
+          example: Bad Request
+    NotFoundResponse:
+      allOf:
+        - $ref: '#/components/schemas/BaseResponse'
+        - type: object
+      properties:
+        status:
+          example: 404
+        error:
+          example: Not Found
+  

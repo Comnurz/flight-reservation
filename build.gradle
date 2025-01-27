@@ -1,0 +1,55 @@
+plugins {
+    id 'org.springframework.boot' version '2.7.13'
+    id 'io.spring.dependency-management' version '1.0.15.RELEASE'
+    id 'java'
+    id 'checkstyle'
+    id 'org.flywaydb.flyway' version '9.22.0'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+
+sourceCompatibility = '11'
+targetCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-web'
+    runtimeOnly 'org.postgresql:postgresql'
+    implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+
+    implementation 'org.flywaydb:flyway-core'
+    // JPA (Javax Persistence)
+    implementation 'javax.persistence:javax.persistence-api:2.2'
+    // Validation (Javax Validation)
+    implementation 'javax.validation:validation-api:2.0.1.Final'
+    // Testing
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.0'
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    // Swagger
+    implementation 'org.springdoc:springdoc-openapi-ui:1.7.0'
+}
+
+// Look at https://docs.gradle.org/current/dsl/org.gradle.api.plugins.quality.CheckstyleExtension.html
+checkstyle {
+    toolVersion "8.18"
+    maxErrors 0
+    maxWarnings 3600
+    configFile file("$rootProject.projectDir/config/checkstyle/checkstyle.xml")
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
+
+flyway {
+    url = 'jdbc:postgresql://127.0.0.1:5432/flightReservation'
+    user = 'admin'
+    password = 'admin1234'
+    locations = ['classpath:db/migration']
+    cleanDisabled = false
+}
